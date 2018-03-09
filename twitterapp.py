@@ -10,15 +10,7 @@ import twitter
 import time
 
 data = pd.DataFrame(columns=[ 'created_at','id','text','user','source','hashtags'])
-
-
-
-
-
-
-
 def t_api():
-    print("In API")
     return twitter.Api(consumer_key='45owJD5G5DDdSsWEAa3TQZCt9',
              consumer_secret='6WyuURska9ByI9zQXLFEDrBZgsn1HrGJ61oU3xyEacnorD9DCQ',
              access_token_key='2988319474-MTtuwJMgl4dZzG6hkjnTZjMNe26xrWm2VVbNVua',
@@ -34,44 +26,64 @@ def min_id(result):
     ids=([r.id for r in result])
     return min(ids)
 
+def min_date(result):
+    dates=([r.created_at for r in result])
+    min_date= min(dates).lower().split(" ")
+    date="2018-"
+    if (min_date[1]=='feb'):
+        date+="02-"
+    elif(min_date[1]=='mar'):
+        date+="03-"
+    else:
+         date+="02"
+    date+=min_date[2]
+    return date
+
+#    return (str(min_date.year)+"-"+str(min_date.month)+"-"+str(min_date.day))
+def datee(result):
+    dates=([r.created_at for r in result])
+    min_date= min(dates)
+    print(min_date)
 def panda_data(results):
     for r in results:
         created_at,hashtags,ids,source,text,user = [None]*6
-        try:
+        
+        text=r.text
+        if (text[:2]!="RT") and r.lang!="en":
             created_at = r.created_at
             ids=r.id
             source=r.source
             hashtags = [h.text for h in  r.hashtags]
-            text=r.text
             user = r.user.screen_name
-            
             i = data.shape[0]
             data.loc[i] = [created_at,ids,text,user,source,hashtags] 
-            data.to_csv('data/collected_3_3.csv', encoding='utf-8', index=False)
-        except Exception  as e:
-            print(e)
-            print(str(time.strftime('%X %x %Z')))
-            time.sleep(990)
+            data.to_csv('data/topasd_25.csv', encoding='utf-8', index=False)
+            
            
     #print("Add to csv file")
 
 
 def collect_data(hashtag):
-    
     results = api.GetSearch(term=twitter, 
                          raw_query='q=%23'+hashtag+
                          '&count=100&result_type=recent&since='+start_date+
                          '&until='+end_date+'&count=100')
     minim = min_id(results)
-    panda_data(results)
-    for j in range(0,2000):
-        
+    end=(min_date(results))
+    count=1
+#    print(end==start_date)
+    while(end!=start_date):  
         try:
-            print(j)
             results = search(hashtag,start_date,end_date,minim)
             minim = min_id(results)
+            end=(min_date(results))
+            count+=1
+            if(count%25==0):
+                print(hashtag)
+    #        datee(results)
             panda_data(results)
         except Exception  as e:
+            count=1
             print(e)
             try:
                 if(e.message[0]['code']==88):
@@ -79,10 +91,14 @@ def collect_data(hashtag):
                     time.sleep(990)
             except:
                     pass
+##            
+#     
+
 
 api=t_api()
-start_date='2018-02-26'
-end_date='2018-3-04'
+start_date='2018-03-05'
+end_date='2018-03-7'
+
 print("Start")
-collect_data("health")
-print("End")
+##collect_data("health")
+#print("End")
