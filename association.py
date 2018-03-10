@@ -10,19 +10,18 @@ Created on Fri Mar  2 15:07:23 2018
 import pickle
 import time
 import csv
-import itertools
+#import itertools
 import re
 import pandas as pd 
 from collections import Counter
 
 
 t1=time.time()
-
-print("Started at ",end="")
-print(time.strftime('%X %x'))
+#print("Started at ",end="")
+#print(time.strftime('%X %x'))
 
 #import twitterapp
-item_threshold=3000
+item_threshold=300
 teir2_threshold=80
     
 
@@ -46,7 +45,10 @@ def load_data(filename):
                 rows_hashtags=ast.literal_eval(row[5]) #Convert String in list form to list
                 text = row[2]
                 if text.find('RT') ==-1 and len(rows_hashtags)>0:                #Remove Retweets
-                    list_of_hashtags.append(rows_hashtags)      
+                    for r in rows_hashtags:
+                        if not(len(r)<1):
+                            list_of_hashtags.append(rows_hashtags)  
+                
             except:
                 pass
     return list_of_hashtags
@@ -201,21 +203,20 @@ def main():
     print()
     
     print("Examples of generated Singles")
-    for key in list(sorted_hashtags.items())[:10]:
+    for key in list(sorted_hashtags.items())[:25]:
         print(key)
     print()
 #    print(sorted_hashtags)
     
     #to generate tuple of on raw data
-    """
+    '''
     t0=time.time()
     pair=get_pair(sorted_hashtags)
-    print("Pairs Generated in %0.3fs." % (time.time() - t0))
     pair_tuple=get_all_tuples(pair)
-    p_pair_tuple=(prune(pair_tuple,500))
+    p_pair_tuple=(prune(pair_tuple,300))
     pickle.dump(p_pair_tuple, open("data/pair_tup.pickle", "wb"))
-
-    """
+    print("Pairs Generated in %0.3fs." % (time.time() - t0))
+    '''
     p_pair_tuple=pickle.load(open("data/pair_tup.pickle", "rb"))
     sort(p_pair_tuple)
     print("Example of generated pair tuple")
@@ -276,18 +277,23 @@ def main():
 
 #To get the list of Hashtag from raw data
 '''
-#rh1=load_data("collected.csv")
-#rh2=load_data("Top_25.csv")
-#main_list=rh1+rh2
-#main_list.sort()
-#list(main_list for main_list,_ in itertools.groupby(main_list))  #removing the duplicate hashtags
-#pickle.dump(main_list, open("data/main_list.pickle", "wb"))
+rh1=load_data("collected.csv")
+rh2=load_data("Top_25.csv")
+main_list=rh1+rh2
+main_list.sort()
+#list(main_list for main_list,_ in itertools.groupby(main_list))
+new_k = []
+for elem in main_list:
+    if elem not in new_k:
+        new_k.append(elem)
+main_list=new_k
+pickle.dump(main_list, open("data/main_list.pickle", "wb"))
 '''
 
 main_list=pickle.load(open("data/main_list.pickle", "rb"))
-main()
+#main()
 
-print("done in %0.3fs." % (time.time() - t1))
+#print("done in %0.3fs." % (time.time() -t1))
 
 
 

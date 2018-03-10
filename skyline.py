@@ -12,8 +12,8 @@ import time
 t0=time.time()
 import itertools
 
-print("Started at ",end="")
-print(time.strftime('%X %x'))
+#print("Started at ",end="")
+#print(time.strftime('%X %x'))
 file="data/skyline50.csv"
 
 def load_data():
@@ -117,5 +117,5 @@ def main():
 #    prune(penta,0.99)
 #    sort_by_conv(penta)
 #    print_list(penta)
-main()
-print("done in %0.3fs." % (time.time() - t0))
+#main()
+#print("done in %0.3fs." % (time.time() - t0))

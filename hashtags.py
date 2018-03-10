@@ -5,10 +5,11 @@ import csv
 import re
 import twitterapp as tw
 import pickle 
+import itertools
 t0=time.time()
 
-print("Started at ",end="")
-print(time.strftime('%X %x'))
+#print("Started at ",end="")
+#print(time.strftime('%X %x'))
 
 
 
@@ -29,7 +30,7 @@ def load_data(filename):
         reader.pop(0)
         for row in reader:
             try:
-                row[5]=re.sub(r'[^\x00-\x7f]',r'',row[5]) 
+#                row[5]=re.sub(r'[^\x00-\x7f]',r'',row[5]) 
                 rows_hashtags=ast.literal_eval(row[5]) #Convert String in list form to list
                 text = row[2]
                 if text.find('RT') ==-1 and len(rows_hashtags)>0:                #Remove Retweets
@@ -61,7 +62,6 @@ def load_users(filename):
                 users.append(row[3])            
     return users
 
-
 def get_sorted(data,max_output=_NO_DEFAULT):
     from collections import Counter
     no_items=None
@@ -72,6 +72,25 @@ def get_sorted(data,max_output=_NO_DEFAULT):
 #    return sorted (counts, key=counts.get, reverse=True)[:max_output]
     return sort_data
 def main():
+    list_hashtags=pickle.load(open("data/main_list.pickle", "rb"))
+    list(list_hashtags for list_hashtags,_ in itertools.groupby(list_hashtags))  #removing the duplicate hashtags
+    
+    count=0
+    for l in range(0,len(list_hashtags)):
+        if len(list_hashtags[l][0])>1:
+            print(list_hashtags[l])
+            count+=1
+        if count==10:
+            break
+    print()
+#    list_hashtags=load_data("collected.csv")                # for getting list os hashtags  
+    hashtags=all_hashtags(list_hashtags)
+    top_hashtags=get_sorted(hashtags,50)
+    print("Top Hashtags excluding Health are: ")
+    for key,value in top_hashtags.items():
+        print(key, end=": ")
+        print(value)
+    print()
     users=load_users("collected.csv")
     top_users=get_sorted(users,50)
     
@@ -80,28 +99,19 @@ def main():
         print(key, end=": ")
         print(value)
     print()
-    
-    list_hashtags=pickle.load(open("data/main_list.pickle", "rb"))
-
-#    list_hashtags=load_data("collected.csv")                # for getting list os hashtags  
-    hashtags=all_hashtags(list_hashtags)
-    top_hashtags=get_sorted(hashtags,50)
-    print("Top Hashtags excluding Health are: ")
-    for key,value in top_hashtags.items():
-        print(key, end=": ")
-        print(value)
 
     # for collecting data from twitter api
     '''
-    for key in top_hashtags:
+    top25_hashtags=get_sorted(hashtags,25)
+    for key in top25_hashtags:
         print(key)
         tw.collect_data(key)
     '''
 
-main()
+#main()
 
 
-print("done in %0.3fs." % (time.time() - t0))
+#print("done in %0.3fs." % (time.time() - t0))
 
 
 
