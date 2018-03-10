@@ -39,11 +39,6 @@ def min_date(result):
     date+=min_date[2]
     return date
 
-#    return (str(min_date.year)+"-"+str(min_date.month)+"-"+str(min_date.day))
-def datee(result):
-    dates=([r.created_at for r in result])
-    min_date= min(dates)
-    print(min_date)
 def panda_data(results):
     for r in results:
         created_at,hashtags,ids,source,text,user = [None]*6
@@ -58,9 +53,6 @@ def panda_data(results):
             i = data.shape[0]
             data.loc[i] = [created_at,ids,text,user,source,hashtags] 
             data.to_csv('data/topasd_25.csv', encoding='utf-8', index=False)
-            
-           
-    #print("Add to csv file")
 
 
 def collect_data(hashtag):
@@ -71,7 +63,6 @@ def collect_data(hashtag):
     minim = min_id(results)
     end=(min_date(results))
     count=1
-#    print(end==start_date)
     while(end!=start_date):  
         try:
             results = search(hashtag,start_date,end_date,minim)
@@ -80,7 +71,6 @@ def collect_data(hashtag):
             count+=1
             if(count%25==0):
                 print(hashtag)
-    #        datee(results)
             panda_data(results)
         except Exception  as e:
             count=1
@@ -91,14 +81,11 @@ def collect_data(hashtag):
                     time.sleep(990)
             except:
                     pass
-##            
-#     
-
 
 api=t_api()
 start_date='2018-03-05'
 end_date='2018-03-7'
 
-print("Start")
+#print("Start")
 ##collect_data("health")
 #print("End")

@@ -2,10 +2,9 @@
 #import re
 import time
 import csv
-#import itertools
 import re
 import twitterapp as tw
-
+import pickle 
 t0=time.time()
 
 print("Started at ",end="")
@@ -72,84 +71,32 @@ def get_sorted(data,max_output=_NO_DEFAULT):
     sort_data=dict(counts.most_common(no_items))                         #Get the sorted  hashtags in Dictionary 
 #    return sorted (counts, key=counts.get, reverse=True)[:max_output]
     return sort_data
-
-def get_pair(sorted_hashtags):
-    good_hash=[]
-    list_of_2_hash=[]
-    for key, value in sorted_hashtags.items():
-        if (value>item_threshold):
-            good_hash.append(key)
-    for i in range(0,len(good_hash)):
-        for j in range(i,len(good_hash)):
-            if good_hash[i]!=good_hash[j]:
-                list_of_2_hash.append([good_hash[i],good_hash[j]])
-    return list_of_2_hash
-
-def get_list_2items(phase_2,main_list):
-    two_tup=[]
-    for h in phase_2: 
-        two_tup.append(get_support(h,main_list))
-    #return support of that item
-    return two_tup
-
-def get_triplets(two_tup):
-    good_list=[]
-    list_of_3=[]
-    for i in range(0,len(two_tup)):
-        if (two_tup[i][1]>teir2_threshold):
-            good_list.append(two_tup[i][0])
-    for i in range(0,len(good_list)):
-        for j in range(i,len(good_list)):
-            if good_list[i][0]==good_list[j][0] and good_list[i] !=good_list[j]:
-                list_of_3.append(list(set(good_list[i]+good_list[j])))
-    return list_of_3
-
-
-def get_support(check_list,main_list):
-    support=0
-    for m in main_list:
-        if set(check_list).issubset(m):
-            support+=1
-    #return support of that item
-    return (check_list,support)
-
 def main():
-#    users=load_users("collected.csv")
-#    top_users=get_sorted(users,50)
-#    print(top_users)
-#    
-    list_hashtags=load_data("collected.csv")
+    users=load_users("collected.csv")
+    top_users=get_sorted(users,50)
+    
+    print("Top Users are: ")
+    for key,value in top_users.items():
+        print(key, end=": ")
+        print(value)
+    print()
+    
+    list_hashtags=pickle.load(open("data/main_list.pickle", "rb"))
+
+#    list_hashtags=load_data("collected.csv")                # for getting list os hashtags  
     hashtags=all_hashtags(list_hashtags)
-    top_hashtags=get_sorted(hashtags,25)
-    
+    top_hashtags=get_sorted(hashtags,50)
+    print("Top Hashtags excluding Health are: ")
+    for key,value in top_hashtags.items():
+        print(key, end=": ")
+        print(value)
+
+    # for collecting data from twitter api
+    '''
     for key in top_hashtags:
-#        print(key)
-        top_hashtags.pop(key)
-        break
-    for key in top_hashtags:
-#        print(key)
+        print(key)
         tw.collect_data(key)
-        
-    
-#    rh1=load_data("collected.csv")
-#    rh2=load_data("temp.csv")
-#    main_list=rh1+rh2
-#    main_list.sort()
-#    list(main_list for main_list,_ in itertools.groupby(main_list))  #removing the duplicate hashtags
-#    
-#    
-#    data=all_hashtags(main_list)
-# 
-#    sorted_hashtags=get_sorted(data)
-#    phase_2=get_pair(sorted_hashtags)
-##    print(phase_2)
-#    list_3=get_list_2items(phase_2,main_list)
-#    phase_3=get_triplets(list_3)
-#    for h in phase_3: 
-#        print(get_support(h,main_list))
-        
-#    print(main_list)
-    
+    '''
 
 main()
 
